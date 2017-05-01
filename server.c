@@ -16,7 +16,7 @@
 #include <unistd.h>
 
 #define PORT_NUM "5550"
-
+int sum = 0;
 int run = 1;
 
 void sigint_handler()
@@ -34,6 +34,7 @@ int main()
     int connected_sockfd;
     struct addrinfo clientinfo;
     socklen_t clientinfo_size;
+    char send_string[140];
     char rcv_string[140];
     int bytes;
     int flags;
@@ -110,7 +111,16 @@ int main()
         {
             rcv_string[bytes] = '\0';
             printf("Received: %s", rcv_string);
+
         }
+        sum=sum+atoi(rcv_string);
+        printf("now the sum= %d",sum);
+        //send message to client the current sum
+        send_string=itoa(sum);
+        bytes=send(connected_sockfd,send_string,10.0);
+        if(bytes==-1)
+        {printf("error in sending message\n");
+        printf("send sum to client\n");
     }
 
     /* close the sockets */

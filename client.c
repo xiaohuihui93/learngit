@@ -31,6 +31,7 @@ int main()
     struct addrinfo *servinfo;
     int sockfd;
     char send_string[140];
+    char rcv_string[140];
     int bytes;
 
     /* catch SIGINT (signal caused by Control-C
@@ -74,7 +75,7 @@ int main()
     while (run == 1)
     {
         /* prompt user for some data to send */
-        printf("Enter string to send: ");
+        printf("Enter a number to send: ");
         fgets(send_string, 140, stdin);
 
         /* send the message on the socket */
@@ -83,7 +84,16 @@ int main()
         {
             printf("Error sending message\n");
         }
-        printf("Sent %d bytes to localhost port %s\n", bytes, PORT_NUM);
+        printf("Sent a number %s to server",send_string);
+        //receive sum from server
+        bytes=recv(sockfd,rcv_string,140,0);
+        if (bytes == -1)
+        {
+            printf("Error in receiving message\n");
+        }
+        rcv_string[bytes]='\0';
+        printf("sum is : %s \n",rcv_string);
+
     }
 
     /* close the socket */
