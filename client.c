@@ -79,7 +79,7 @@ int main()
         fgets(send_string, 140, stdin);
 
         /* send the message on the socket */
-        bytes = send(sockfd, send_string, strlen(send_string), 0);
+        bytes=send(sockfd,send_string,140,0);
         if (bytes == -1)
         {
             printf("Error sending message\n");

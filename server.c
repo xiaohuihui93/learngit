@@ -107,20 +107,26 @@ int main()
     while (run == 1)
     {
         bytes = recv(connected_sockfd, rcv_string, 140, 0);
-        if (bytes > 0)
-        {
-            rcv_string[bytes] = '\0';
-            printf("Received: %s", rcv_string);
-
+        if (bytes==-1)
+        {   printf("error in sending message\n");
+            close(connected_sockfd);
+            close(sockfd);
+            return 1;
         }
+        rcv_string[bytes] = '\0';
+        printf("Received: %s \n", rcv_string);
         sum=sum+atoi(rcv_string);
-        printf("now the sum= %d",sum);
+        printf("now the sum= %d\n",sum);
         //send message to client the current sum
-        send_string=itoa(sum);
-        bytes=send(connected_sockfd,send_string,10.0);
+        sprintf(send_string,"%d",sum);
+        bytes=send(connected_sockfd,send_string,140,0);
         if(bytes==-1)
         {printf("error in sending message\n");
-        printf("send sum to client\n");
+            close(connected_sockfd);
+            close(sockfd);
+            return 1;
+        }
+        printf("send sum %d to client\n",sum);
     }
 
     /* close the sockets */
