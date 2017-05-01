@@ -56,9 +56,9 @@ int main()
         printf("Error connecting the socket\n");
         return 1;
     }
-
+while(1){
     /* prompt user for some data to send */
-    printf("Enter string to send: ");
+    printf("Enter a number to send: ");
     fgets(send_string, 140, stdin);
 
     /* send the message on the socket */
@@ -67,7 +67,7 @@ int main()
     {
         printf("Error sending message\n");
     }
-    printf("Sent %d bytes to localhost port %s\n", bytes, PORT_NUM);
+    printf("Sent a number %s  to server \n", send_string);
 
     /* receive a message from the socket */
     bytes = recv(sockfd, rcv_string, 140, 0);
@@ -78,8 +78,8 @@ int main()
         return 1;
     }
     rcv_string[bytes] = '\0';
-    printf("Received: %s\n", rcv_string);
-
+    printf("Received:sum= %s\n", rcv_string);
+}
     /* close the socket */
     close(sockfd);
 

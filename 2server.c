@@ -25,6 +25,7 @@ int main()
     struct addrinfo clientinfo;
     socklen_t clientinfo_size;
     char rcv_string[140];
+	char send_string[140];
     int bytes;
 
     /* clear hints structure */
@@ -81,35 +82,31 @@ int main()
         return 1;
     }
     printf("Received connection from client\n");
-
+while(1){
     /* receive a message from the socket */
     bytes = recv(connected_sockfd, rcv_string, 140, 0);
     if (bytes == -1)
     {
-        printf("Error in recv()\n");
+        printf("Error in recv()\n");/////////////////////////////////////////////
         close(connected_sockfd);
         close(sockfd);
         return 1;
     }
     rcv_string[bytes] = '\0';
     printf("Received: %s", rcv_string);
-
-    if (atoi(rcv_string) % 2 == 0)
-    {
-        /* even number */
-        bytes = send(connected_sockfd, "EVEN", 5, 0);
-    }
-    else
-    {
-        /* odd number */
-        bytes = send(connected_sockfd, "ODD", 4, 0);
-    }
+    sum=sum+atoi(rcv_string);
+	printf("now the sum is %d",sum);
+	spintf(send_string,"%d",sum);
+   
+    bytes = send(connected_sockfd,send_string, 5, 0);
+    
+    
     if (bytes == -1)
     {
         printf("Error sending message\n");
     }
-    printf("Sent %d bytes to port %s\n", bytes, PORT_NUM);
-
+    printf("Sent sum:%d to client \n", sum);
+}
     /* close the sockets */
     close(connected_sockfd);
     close(sockfd);
