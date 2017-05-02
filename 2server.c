@@ -27,7 +27,7 @@ int main()
     char rcv_string[140];
 	char send_string[140];
     int bytes;
-
+    int sum=0;
     /* clear hints structure */
     memset(&hints, 0, sizeof(hints));
 
@@ -95,8 +95,8 @@ while(1){
     rcv_string[bytes] = '\0';
     printf("Received: %s", rcv_string);
     sum=sum+atoi(rcv_string);
-	printf("now the sum is %d",sum);
-	spintf(send_string,"%d",sum);
+	printf("now the sum is %d\n",sum);
+	sprintf(send_string,"%d",sum);
    
     bytes = send(connected_sockfd,send_string, 5, 0);
     
