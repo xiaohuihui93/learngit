@@ -1,103 +1,74 @@
-/*
- * client.c
- * CPE-555 Real-Time and Embedded Systems
- * Instructor: Richard Prego
- * Stevens Institute of Technology
- * Spring 2017
+/* client.c
+ * cpe555 Real-Time and Embedded Systems
+ * Jiahui Chen
+ * 10422306
+ * reference : client.c on Canvas provided by professor
+ *
  */
-
-#include <stdio.h>
-#include <string.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <unistd.h>
-
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<signal.h>
+#include<fcntl.h>
+#include<sys/types.h>
+#include<sys/socket.h>
+#include<netdb.h>
+#include<unistd.h>
+//define client port which is same as server port
 #define PORT_NUM "5550"
-
-int run = 1;
-
-void sigint_handler()
-{
-    /* set the 'run' flag to 0 so that the loop in main() will be terminated,
-     * and the socket can be closed */
-    run = 0;
-}
-
 int main()
 {
-    struct addrinfo hints;
+    struct addrinfo hints;//structure with information about the address
     struct addrinfo *servinfo;
-    int sockfd;
-    char send_string[140];
-    char rcv_string[140];
-    int bytes;
-
-    /* catch SIGINT (signal caused by Control-C
-     * we do this so that we can close the socket before the program is terminated
-     */
-    signal(SIGINT, sigint_handler);
-
-    /* clear hints structure */
-    memset(&hints, 0, sizeof(hints));
-
-    /* don't care IPv4 or IPv6
-     * TCP stream socket
-     * fill in local IP address automatically
-     */
-    hints.ai_family = AF_INET;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = AI_PASSIVE;
-
-    /* getaddrinfo populates servinfo structure with server's address info */
-    if (getaddrinfo("localhost", PORT_NUM, &hints, &servinfo) != 0)
-    {
-        printf("Error in getaddrinfo\n");
+    //clear hints
+    memset(&hints,0,sizeof(hints));
+    //fill in local IP address
+    hints.ai_family=AF_INET;//for ipv4
+    hints.ai_socktype=SOCK_STREAM;//for TCP
+    hints.ai_flags=AI_PASSIVE;//setting options
+    //use getaddrinfo return value to judge if we get the info
+    if(getaddrinfo(NULL,PORT_NUM,&hints,&servinfo)!=0){
+        printf("error in getaddrinfo\n");
         return 1;
     }
-
-    /* get a file descriptor for the new socket */
-    sockfd = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
-    if (sockfd == -1)
-    {
-        printf("Error creating socket\n");
+    //creating a socket
+    int sockfd;//the file descriptor for socket
+    sockfd=socket(servinfo->ai_family,servinfo->ai_socktype, servinfo->ai_protocol);
+    //see if create socket succeed
+    if (sockfd==-1)
+    {printf("error in creating socket");
+    return 1;}
+    //since we use the eg:TCP so do not have to bind and listen
+    //then we connect
+     //bind(sockfd,struc sockaddr *my_addr,int addrlen);
+    if(connect(sockfd,servinfo->ai_addr,servinfo->ai_addrlen)==-1){
+        printf("error in connecting");
+        close(sockfd);
         return 1;
     }
+    //else we building connection with server
+    while (1) {
 
-    /* connect the socket */
-    if (connect(sockfd, servinfo->ai_addr, servinfo->ai_addrlen) == -1)
-    {
-        printf("Error connecting the socket\n");
-        return 1;
-    }
-
-    while (run == 1)
-    {
-        /* prompt user for some data to send */
-        printf("Enter a number to send: ");
-        fgets(send_string, 140, stdin);
-
-        /* send the message on the socket */
-        bytes=send(sockfd,send_string,140,0);
-        if (bytes == -1)
-        {
-            printf("Error sending message\n");
+        //prompt user for enter a number
+        printf("Enter a number to send:");
+        //create a char [] to store what we want to send
+        char send_string[140];
+        //create a char[] to store the result of sum from server
+        char rec_string[140];
+        fgets(send_string,140,stdin);
+        int bytes=send(sockfd,send_string,140,0);
+        if(bytes==-1){
+            printf("error in sending number\n");
         }
-        printf("Sent a number %s to server",send_string);
+        printf("send a number %s to server\n",send_string);
         //receive sum from server
-        bytes=recv(sockfd,rcv_string,140,0);
-        if (bytes == -1)
-        {
-            printf("Error in receiving message\n");
+        bytes=recv(sockfd,rec_string,140,0);
+        if(bytes==-1){
+            printf("error in receiving sum from server\n");
         }
-        rcv_string[bytes]='\0';
-        printf("sum is : %s \n",rcv_string);
-
+        rec_string[bytes]='\0';//since there need a \0 at the end
+        printf("sum is : %s \n",rec_string);
     }
-
-    /* close the socket */
     close(sockfd);
-
     return 0;
 }
