@@ -61,6 +61,7 @@ int main()
         close(sockfd);
         return 1;
     }
+    printf("connected with client\n");
     //else we building connection with server
     while (1) {
 
